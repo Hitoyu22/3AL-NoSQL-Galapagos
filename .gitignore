@@ -44,3 +44,5 @@ bin/
 
 ### Variables d'environnement ###
 .env
+.idea/
+.vscode

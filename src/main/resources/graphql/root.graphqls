@@ -1,0 +1,4 @@
+# Fichier Racine, tous les autres fichier graphqls doivent être des extends de ce dernier
+type Query {
+    version: String
+}
