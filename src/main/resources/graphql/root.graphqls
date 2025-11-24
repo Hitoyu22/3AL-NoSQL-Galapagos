@@ -2,3 +2,13 @@
 type Query {
     version: String
 }
+
+# Ici il s'agit du parent Mutation pour l'ensemble des Possibilités Update / Création / Suppression
+type Mutation {
+}
+
+
+# Pour résumer :
+
+# Type Query -> GET (pour récupérer des données avec filtres) soit le R de CRUD (pour Read)
+# Type Mutation -> POST, PUT, DELETE (pour ajouter, modifier ou supprimer des données, soit le C-U-D de CRUD (Create, Update, Delete)
