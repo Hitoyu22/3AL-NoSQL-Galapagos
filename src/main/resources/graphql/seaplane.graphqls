@@ -1,0 +1,16 @@
+type Seaplane {
+    id: String
+    model: String
+    boxCapacity: Int
+    fuelConsumptionKm: Float
+    cruiseSpeedKmh: Float
+    status: String
+}
+
+extend type Query {
+    seaplanes(id : String) : [Seaplane]
+}
+
+extend type Mutation {
+    createSeaplane(id: String!, model: String!, boxCapacity: Int!, fuelConsumptionKm: Float!, cruiseSpeedKmh: Float!, status: String!): Seaplane
+}
