@@ -1,7 +1,6 @@
 package fr.esgi.galapagos.model.neo4j;
 
 import fr.esgi.galapagos.model.enums.SeaplaneStatus;
-
 import java.util.Map;
 
 public class Seaplane {
@@ -11,6 +10,7 @@ public class Seaplane {
     private double fuelConsumptionKm;
     private double cruiseSpeedKmh;
     private SeaplaneStatus status;
+    private Location currentLocation;
 
     public Seaplane(String id, String model, int boxCapacity, double fuelConsumptionKm, double cruiseSpeedKmh, SeaplaneStatus status) {
         this.id = id;
@@ -19,6 +19,14 @@ public class Seaplane {
         this.fuelConsumptionKm = fuelConsumptionKm;
         this.cruiseSpeedKmh = cruiseSpeedKmh;
         this.status = status;
+    }
+
+    public void setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    public Location getCurrentLocation() {
+        return currentLocation;
     }
 
     public Map<String, Object> toMap() {
@@ -32,52 +40,16 @@ public class Seaplane {
         );
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public int getBoxCapacity() {
-        return boxCapacity;
-    }
-
-    public void setBoxCapacity(int boxCapacity) {
-        this.boxCapacity = boxCapacity;
-    }
-
-    public double getFuelConsumptionKm() {
-        return fuelConsumptionKm;
-    }
-
-    public void setFuelConsumptionKm(double fuelConsumptionKm) {
-        this.fuelConsumptionKm = fuelConsumptionKm;
-    }
-
-    public double getCruiseSpeedKmh() {
-        return cruiseSpeedKmh;
-    }
-
-    public void setCruiseSpeedKmh(double cruiseSpeedKmh) {
-        this.cruiseSpeedKmh = cruiseSpeedKmh;
-    }
-
-    public SeaplaneStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(SeaplaneStatus status) {
-        this.status = status;
-    }
-
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public String getModel() { return model; }
+    public void setModel(String model) { this.model = model; }
+    public int getBoxCapacity() { return boxCapacity; }
+    public void setBoxCapacity(int boxCapacity) { this.boxCapacity = boxCapacity; }
+    public double getFuelConsumptionKm() { return fuelConsumptionKm; }
+    public void setFuelConsumptionKm(double fuelConsumptionKm) { this.fuelConsumptionKm = fuelConsumptionKm; }
+    public double getCruiseSpeedKmh() { return cruiseSpeedKmh; }
+    public void setCruiseSpeedKmh(double cruiseSpeedKmh) { this.cruiseSpeedKmh = cruiseSpeedKmh; }
+    public SeaplaneStatus getStatus() { return status; }
+    public void setStatus(SeaplaneStatus status) { this.status = status; }
 }

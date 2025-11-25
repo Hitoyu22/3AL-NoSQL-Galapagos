@@ -5,6 +5,14 @@ type Seaplane {
     fuelConsumptionKm: Float
     cruiseSpeedKmh: Float
     status: String
+    currentLocation: Location
+}
+
+type Location {
+    portName: String
+    island: Island
+    lat: Float
+    lon: Float
 }
 
 extend type Query {
@@ -13,4 +21,10 @@ extend type Query {
 
 extend type Mutation {
     createSeaplane(id: String!, model: String!, boxCapacity: Int!, fuelConsumptionKm: Float!, cruiseSpeedKmh: Float!, status: String!): Seaplane
+
+    updateSeaplane(id: String!, model: String, boxCapacity: Int, fuelConsumptionKm: Float, cruiseSpeedKmh: Float, status: String): Seaplane
+
+    deleteSeaplane(id: String!): Boolean
+
+    assignFlight(seaplaneId: String!, departurePort: String!, arrivalPort: String!): Seaplane
 }

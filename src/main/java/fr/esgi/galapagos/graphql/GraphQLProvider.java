@@ -1,5 +1,7 @@
 package fr.esgi.galapagos.graphql;
 
+import fr.esgi.galapagos.helper.SeaplaneHelper;
+import fr.esgi.galapagos.helper.SeaplaneHelper.SeaplaneInput;
 import fr.esgi.galapagos.service.IslandService;
 import fr.esgi.galapagos.service.SeaplaneService;
 import graphql.GraphQL;
@@ -17,11 +19,12 @@ public class GraphQLProvider {
 
     private static final IslandService islandService = new IslandService();
     private static final SeaplaneService seaplaneService = new SeaplaneService();
+
     public static GraphQL createGraphQL() {
+
         SchemaParser schemaParser = new SchemaParser();
         TypeDefinitionRegistry typeRegistry = new TypeDefinitionRegistry();
 
-        // On importe les différents fichiers graphqls afin quel le serveur puisse les exploiter
         List<String> schemaFiles = List.of(
                 "graphql/root.graphqls",
                 "graphql/island.graphqls",
@@ -32,37 +35,58 @@ public class GraphQLProvider {
             typeRegistry.merge(schemaParser.parse(loadSchema(schemaFile)));
         }
 
-        // On définit un runtime dans le quel on revient définir chaque "nom" d'entité mise à disposition
-        // version correspond au champ version dans Query (root.graphqls) et islands au tableau de Island (island.graphqls)
         RuntimeWiring wiring = RuntimeWiring.newRuntimeWiring()
                 .type("Query", builder -> builder
                         .dataFetcher("version", env -> "1.0.0")
                         .dataFetcher("islands", environment -> {
+                            Integer id = environment.getArgument("id");
                             String name = environment.getArgument("name");
-                            return islandService.getIslands(name);
-                        }).dataFetcher("seaplanes",environment -> {
+                            return islandService.getIslands(id, name);
+                        })
+                        .dataFetcher("seaplanes", environment -> {
                             String id = environment.getArgument("id");
                             return seaplaneService.getSeaplanes(id);
                         })
-                ).type("Mutation", builder -> builder
+                )
+                .type("Mutation", builder -> builder
                         .dataFetcher("createSeaplane", environment -> {
-                            String id = environment.getArgument("id");
-                            String model = environment.getArgument("model");
+                            SeaplaneInput input = SeaplaneHelper.extractSeaplaneInput(environment);
 
-                            Integer boxCapacity = environment.getArgument("boxCapacity");
-                            Double fuelConsumptionKm = environment.getArgument("fuelConsumptionKm");
-                            Double cruiseSpeedKmh = environment.getArgument("cruiseSpeedKmh");
-                            String status = environment.getArgument("status");
+                            if (input.boxCapacity() == null ||
+                                    input.fuelConsumptionKm() == null ||
+                                    input.cruiseSpeedKmh() == null) {
 
-                            if (boxCapacity == null || fuelConsumptionKm == null || cruiseSpeedKmh == null) {
                                 throw new IllegalArgumentException("Les arguments boxCapacity, fuelConsumptionKm et cruiseSpeedKmh sont obligatoires.");
                             }
 
-                            return seaplaneService.createSeaplane(id, model, boxCapacity, fuelConsumptionKm, cruiseSpeedKmh, status);
-                        }))
+                            return seaplaneService.createSeaplane(
+                                    input.id(), input.model(), input.boxCapacity(),
+                                    input.fuelConsumptionKm(), input.cruiseSpeedKmh(), input.status()
+                            );
+                        })
+                        .dataFetcher("updateSeaplane", environment -> {
+                            SeaplaneInput input = SeaplaneHelper.extractSeaplaneInput(environment);
+                            return seaplaneService.updateSeaplane(
+                                    input.id(), input.model(), input.boxCapacity(),
+                                    input.fuelConsumptionKm(), input.cruiseSpeedKmh(), input.status()
+                            );
+                        })
+                        .dataFetcher("deleteSeaplane", environment -> {
+                            String id = environment.getArgument("id");
+                            return seaplaneService.deleteSeaplane(id);
+                        })
+                        .dataFetcher("assignFlight", environment -> {
+                            String id = environment.getArgument("seaplaneId");
+                            String dep = environment.getArgument("departurePort");
+                            String arr = environment.getArgument("arrivalPort");
+                            return seaplaneService.assignFlight(id, dep, arr);
+                        })
+                )
                 .build();
 
-        return GraphQL.newGraphQL(new SchemaGenerator().makeExecutableSchema(typeRegistry, wiring)).build();
+        return GraphQL
+                .newGraphQL(new SchemaGenerator().makeExecutableSchema(typeRegistry, wiring))
+                .build();
     }
 
     private static String loadSchema(String filename) {

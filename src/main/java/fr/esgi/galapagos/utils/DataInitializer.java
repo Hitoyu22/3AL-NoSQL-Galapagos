@@ -22,25 +22,25 @@ import static org.neo4j.driver.Values.parameters;
 public class DataInitializer {
 
     private static final List<Island> ISLANDS = Arrays.asList(
-            new Island("Baltra", -0.4511, -90.2653, 27),
-            new Island("Bartolomé", -0.2865, -90.5521, 1.2),
-            new Island("Darwin", 1.6781, -92.0033, 1.1),
-            new Island("Española", -1.3833, -89.6167, 60),
-            new Island("Fernandina", -0.3667, -91.5500, 642),
-            new Island("Floreana", -1.2861, -90.4369, 173),
-            new Island("Genovesa", 0.3205, -89.9558, 14),
-            new Island("Isabela", -0.7167, -91.1000, 4640),
-            new Island("Marchena", 0.3333, -90.4833, 130),
-            new Island("Seymour Nord", -0.3950, -90.2881, 1.9),
-            new Island("Pinta", 0.5833, -90.7500, 60),
-            new Island("Pinzón", -0.6111, -90.6667, 18),
-            new Island("Rábida", -0.4075, -90.7125, 4.9),
-            new Island("San Cristóbal", -0.8333, -89.4333, 558),
-            new Island("Santa Cruz", -0.6167, -90.3500, 986),
-            new Island("Santa Fé", -0.8111, -90.0556, 24),
-            new Island("Santiago", -0.2500, -90.7667, 585),
-            new Island("Plaza Sud", -0.5861, -90.1650, 0.13),
-            new Island("Wolf", 1.3806, -91.8000, 1.3)
+            new Island(1,"Baltra", -0.4511, -90.2653, 27),
+            new Island(2,"Bartolomé", -0.2865, -90.5521, 1.2),
+            new Island(3,"Darwin", 1.6781, -92.0033, 1.1),
+            new Island(4,"Española", -1.3833, -89.6167, 60),
+            new Island(5,"Fernandina", -0.3667, -91.5500, 642),
+            new Island(6,"Floreana", -1.2861, -90.4369, 173),
+            new Island(7,"Genovesa", 0.3205, -89.9558, 14),
+            new Island(8,"Isabela", -0.7167, -91.1000, 4640),
+            new Island(9,"Marchena", 0.3333, -90.4833, 130),
+            new Island(10,"Seymour Nord", -0.3950, -90.2881, 1.9),
+            new Island(11,"Pinta", 0.5833, -90.7500, 60),
+            new Island(12,"Pinzón", -0.6111, -90.6667, 18),
+            new Island(13,"Rábida", -0.4075, -90.7125, 4.9),
+            new Island(14,"San Cristóbal", -0.8333, -89.4333, 558),
+            new Island(15,"Santa Cruz", -0.6167, -90.3500, 986),
+            new Island(16,"Santa Fé", -0.8111, -90.0556, 24),
+            new Island(17,"Santiago", -0.2500, -90.7667, 585),
+            new Island(18,"Plaza Sud", -0.5861, -90.1650, 0.13),
+            new Island(19,"Wolf", 1.3806, -91.8000, 1.3)
     );
 
     private static final List<Port> PORTS = Arrays.asList(
@@ -124,7 +124,7 @@ public class DataInitializer {
 
             session.executeWrite(tx -> {
                 for (Island island : ISLANDS) {
-                    tx.run("CREATE (i:Island {name: $name, lat: $lat, lon: $lon, area_km2: $area})", island.toMap());
+                    tx.run("CREATE (i:Island {id: $id,name: $name, lat: $lat, lon: $lon, area_km2: $area})", island.toMap());
                 }
                 return null;
             });

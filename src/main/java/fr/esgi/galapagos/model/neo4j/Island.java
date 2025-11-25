@@ -3,12 +3,14 @@ package fr.esgi.galapagos.model.neo4j;
 import java.util.Map;
 
 public class Island {
+    private int id;
     private String name;
     private double lat;
     private double lon;
     private double areaKm2;
 
-    public Island(String name, double lat, double lon, double areaKm2) {
+    public Island(int id, String name, double lat, double lon, double areaKm2) {
+        this.id = id;
         this.name = name;
         this.lat = lat;
         this.lon = lon;
@@ -17,11 +19,19 @@ public class Island {
 
     public Map<String, Object> toMap() {
         return Map.of(
+                "id", id,
                 "name", name,
                 "lat", lat,
                 "lon", lon,
                 "area", areaKm2
         );
+    }
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setName(String name) {
