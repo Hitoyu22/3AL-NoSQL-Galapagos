@@ -38,8 +38,9 @@ public class GraphQLProvider {
                 .type("Query", builder -> builder
                         .dataFetcher("version", env -> "1.0.0")
                         .dataFetcher("islands", environment -> {
+                            Integer id = environment.getArgument("id");
                             String name = environment.getArgument("name");
-                            return islandService.getIslands(name);
+                            return islandService.getIslands(id, name);
                         }).dataFetcher("seaplanes",environment -> {
                             String id = environment.getArgument("id");
                             return seaplaneService.getSeaplanes(id);

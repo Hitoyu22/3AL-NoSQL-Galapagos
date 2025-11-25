@@ -1,11 +1,12 @@
 # On définit comme extends pour que Query (correspondant à l'ensemble du serveur Graphql) possède islands
 # Ici par exemple, il est juste question de return un tableau de Island, et on permet de filtrer avec le nom (non obligatoire)
 extend type Query {
-    islands(name: String): [Island]
+    islands(id: Int, name: String): [Island]
 }
 
 # Ici on définit la structure des données que l'on souhaite renvoyer (ici par exemple, seulement les données de Island qui correspondent à l'entité /models/neo4j/Island.java)
 type Island {
+    id : Int
     name: String
     lat: Float
     lon: Float
