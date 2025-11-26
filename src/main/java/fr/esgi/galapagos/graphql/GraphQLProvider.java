@@ -2,7 +2,10 @@ package fr.esgi.galapagos.graphql;
 
 import fr.esgi.galapagos.helper.SeaplaneHelper;
 import fr.esgi.galapagos.helper.SeaplaneHelper.SeaplaneInput;
+import fr.esgi.galapagos.model.neo4j.Port;
 import fr.esgi.galapagos.service.IslandService;
+import fr.esgi.galapagos.service.LockerService;
+import fr.esgi.galapagos.service.PortService;
 import fr.esgi.galapagos.service.SeaplaneService;
 import graphql.GraphQL;
 import graphql.schema.idl.RuntimeWiring;
@@ -19,6 +22,8 @@ public class GraphQLProvider {
 
     private static final IslandService islandService = new IslandService();
     private static final SeaplaneService seaplaneService = new SeaplaneService();
+    private static final PortService portService = new PortService();
+    private static final LockerService lockerService = new LockerService();
 
     public static GraphQL createGraphQL() {
 
@@ -28,7 +33,9 @@ public class GraphQLProvider {
         List<String> schemaFiles = List.of(
                 "graphql/root.graphqls",
                 "graphql/island.graphqls",
-                "graphql/seaplane.graphqls"
+                "graphql/seaplane.graphqls",
+                "graphql/port.graphqls",
+                "graphql/locker.graphqls"
         );
 
         for (String schemaFile : schemaFiles) {
@@ -46,6 +53,26 @@ public class GraphQLProvider {
                         .dataFetcher("seaplanes", environment -> {
                             String id = environment.getArgument("id");
                             return seaplaneService.getSeaplanes(id);
+                        })
+                        .dataFetcher("ports", environment -> {
+                            Integer id = environment.getArgument("id");
+                            String name = environment.getArgument("name");
+                            String islandName = environment.getArgument("islandName");
+
+                            List<Port> ports = portService.getPorts(id, name, islandName);
+
+                            for (Port port : ports) {
+                                if (port != null && port.getId() != null) {
+                                    port.setLockers(lockerService.getLockers(port.getId(), null));
+                                }
+                            }
+
+                            return ports;
+                        })
+                        .dataFetcher("lockers", environment -> {
+                            Integer portId = environment.getArgument("portId");
+                            String status = environment.getArgument("status");
+                            return lockerService.getLockers(portId, status);
                         })
                 )
                 .type("Mutation", builder -> builder
@@ -80,6 +107,39 @@ public class GraphQLProvider {
                             String dep = environment.getArgument("departurePort");
                             String arr = environment.getArgument("arrivalPort");
                             return seaplaneService.assignFlight(id, dep, arr);
+                        })
+                        .dataFetcher("addLocker", environment -> {
+                            Integer portId = environment.getArgument("portId");
+                            if (portId == null) {
+                                throw new IllegalArgumentException("Le paramètre portId est obligatoire.");
+                            }
+                            return lockerService.addLocker(portId);
+                        })
+                        .dataFetcher("updateLockerStatus", environment -> {
+                            String id = environment.getArgument("id");
+                            String status = environment.getArgument("status");
+                            String reason = environment.getArgument("maintenanceReason");
+                            return lockerService.updateLockerStatus(id, status, reason);
+                        })
+                        .dataFetcher("deleteLocker", environment -> {
+                            String id = environment.getArgument("id");
+                            return lockerService.deleteLocker(id);
+                        })
+                )
+                .type("Port", builder -> builder
+                        .dataFetcher("lockers", environment -> {
+                            Port port = environment.getSource();
+                            if (port == null || port.getId() == null) {
+                                return List.of();
+                            }
+                            return lockerService.getLockers(port.getId(), null);
+                        })
+                        .dataFetcher("nbLockers", environment -> {
+                            Port port = environment.getSource();
+                            if (port == null || port.getId() == null) {
+                                return 0;
+                            }
+                            return lockerService.countLockersByPortId(port.getId());
                         })
                 )
                 .build();

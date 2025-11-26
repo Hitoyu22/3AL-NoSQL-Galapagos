@@ -44,30 +44,30 @@ public class DataInitializer {
     );
 
     private static final List<Port> PORTS = Arrays.asList(
-            new Port("Puerto Baquerizo Moreno", "San Cristóbal", -0.9025, -89.609167, 10),
-            new Port("Puerto Ayora", "Santa Cruz", -0.7400, -90.3117, 8),
-            new Port("Puerto Villamil", "Isabela", -0.9569, -90.9672, 7),
-            new Port("Aéroport de Baltra", "Baltra", -0.4511, -90.2653, 5),
-            new Port("Puerto Velasco Ibarra", "Floreana", -1.2975, -90.4342, 5),
-            new Port("Baie de Sullivan", "Santiago", -0.2916, -90.5708, 6),
-            new Port("Baie Darwin", "Genovesa", 0.3205, -89.9558, 4),
-            new Port("Punta Espinoza", "Fernandina", -0.2678, -91.4422, 5),
-            new Port("Punta Suarez", "Española", -1.3725, -89.7308, 5),
-            new Port("Caleta Tagus", "Isabela", -0.2514, -91.3694, 5),
-            new Port("Bahía Gardner", "Española", -1.3450, -89.6289, 4),
-            new Port("Punta Vicente Roca", "Isabela", 0.0417, -91.7333, 4),
-            new Port("Canal de Itabaca", "Santa Cruz", -0.4583, -90.2708, 4),
-            new Port("Punta Cormorant", "Floreana", -1.2333, -90.4167, 3),
-            new Port("Baie de Bartolomé", "Bartolomé", -0.2833, -90.5500, 2),
-            new Port("Anse Darwin", "Darwin", 1.6780, -92.0030, 2),
-            new Port("Playa de las Bachas", "Seymour Nord", -0.3958, -90.2875, 3),
-            new Port("Punta Mangle", "Marchena", 0.3330, -90.4830, 2),
-            new Port("Cabo Douglas", "Pinta", 0.5830, -90.7500, 2),
-            new Port("Rocas Pinzón", "Pinzón", -0.6110, -90.6660, 2),
-            new Port("Playa Roja", "Rábida", -0.4070, -90.7120, 2),
-            new Port("Baie de Santa Fé", "Santa Fé", -0.8110, -90.0550, 3),
-            new Port("Quai Plaza Sud", "Plaza Sud", -0.5860, -90.1650, 2),
-            new Port("Rocher Wolf", "Wolf", 1.3800, -91.8000, 2)
+            new Port(1,"Puerto Baquerizo Moreno", "San Cristóbal", -0.9025, -89.609167, 150),
+            new Port(2,"Puerto Ayora", "Santa Cruz", -0.7400, -90.3117, 200),
+            new Port(3,"Puerto Villamil", "Isabela", -0.9569, -90.9672, 120),
+            new Port(4,"Aéroport de Baltra", "Baltra", -0.4511, -90.2653, 80),
+            new Port(5,"Puerto Velasco Ibarra", "Floreana", -1.2975, -90.4342, 60),
+            new Port(6,"Baie de Sullivan", "Santiago", -0.2916, -90.5708, 40),
+            new Port(7,"Baie Darwin", "Genovesa", 0.3205, -89.9558, 30),
+            new Port(8,"Punta Espinoza", "Fernandina", -0.2678, -91.4422, 35),
+            new Port(9,"Punta Suarez", "Española", -1.3725, -89.7308, 45),
+            new Port(10,"Caleta Tagus", "Isabela", -0.2514, -91.3694, 50),
+            new Port(11,"Bahía Gardner", "Española", -1.3450, -89.6289, 25),
+            new Port(12,"Punta Vicente Roca", "Isabela", 0.0417, -91.7333, 40),
+            new Port(13,"Canal de Itabaca", "Santa Cruz", -0.4583, -90.2708, 60),
+            new Port(14,"Punta Cormorant", "Floreana", -1.2333, -90.4167, 30),
+            new Port(15,"Baie de Bartolomé", "Bartolomé", -0.2833, -90.5500, 20),
+            new Port(16,"Anse Darwin", "Darwin", 1.6780, -92.0030, 15),
+            new Port(17,"Playa de las Bachas", "Seymour Nord", -0.3958, -90.2875, 25),
+            new Port(18,"Punta Mangle", "Marchena", 0.3330, -90.4830, 20),
+            new Port(19,"Cabo Douglas", "Pinta", 0.5830, -90.7500, 15),
+            new Port(20,"Rocas Pinzón", "Pinzón", -0.6110, -90.6660, 15),
+            new Port(21,"Playa Roja", "Rábida", -0.4070, -90.7120, 20),
+            new Port(22,"Baie de Santa Fé", "Santa Fé", -0.8110, -90.0550, 25),
+            new Port(23,"Quai Plaza Sud", "Plaza Sud", -0.5860, -90.1650, 10),
+            new Port(24,"Rocher Wolf", "Wolf", 1.3800, -91.8000, 10)
     );
 
     private static final List<Seaplane> SEAPLANES = Arrays.asList(
@@ -131,7 +131,7 @@ public class DataInitializer {
 
             session.executeWrite(tx -> {
                 for (Port port : PORTS) {
-                    tx.run("CREATE (p:Port {name: $name, lat: $lat, lon: $lon})", port.toMap());
+                    tx.run("CREATE (p:Port {id:$id, name: $name, lat: $lat, lon: $lon})", port.toMap());
                     tx.run("MATCH (i:Island {name: $islandName}), (p:Port {name: $portName}) CREATE (i)-[:HAS_PORT]->(p)",
                             parameters("islandName", port.getIslandName(), "portName", port.getName()));
                 }
@@ -229,7 +229,7 @@ public class DataInitializer {
         MongoCollection<Document> lockerCol = database.getCollection("lockers");
         for (Port port : PORTS) {
             for (int i = 1; i <= port.getNbLockers(); i++) {
-                lockerCol.insertOne(new Locker(port.getName(), i).toDocument());
+                lockerCol.insertOne(new Locker(port.getId(), i).toDocument());
             }
         }
 
@@ -255,8 +255,8 @@ public class DataInitializer {
         Box box2 = new Box(order1.getId(), ids.get("client1"), 2, BoxStatus.DELIVERED, "1x Station météo");
         boxesCol.insertMany(Arrays.asList(box1.toDocument(), box2.toDocument()));
 
-        updateLocker(lockersCol, "Puerto Villamil", 1, LockerStatus.OCCUPIED.name().toLowerCase(), box1.getId());
-        updateLocker(lockersCol, "Puerto Villamil", 2, LockerStatus.OCCUPIED.name().toLowerCase(), box2.getId());
+        updateLocker(lockersCol, 3, 1, LockerStatus.OCCUPIED.name().toLowerCase(), box1.getId());
+        updateLocker(lockersCol, 3, 2, LockerStatus.OCCUPIED.name().toLowerCase(), box2.getId());
 
         Order order2 = new Order(ids.get("client2"), LocalDateTime.now().minusDays(1).toString(), OrderStatus.PENDING, "normal", "Puerto Ayora",
                 Collections.singletonList(new Order.OrderedProduct(ids.get("product2"), 50)), 1, 40.0);
@@ -290,7 +290,7 @@ public class DataInitializer {
 
         Box box3 = new Box(order4.getId(), ids.get("client_dubois"), 1, BoxStatus.DELIVERED, "5x Kit sol, 10x Kit ADN");
         boxesCol.insertOne(box3.toDocument());
-        updateLocker(lockersCol, "Punta Cormorant", 1, LockerStatus.OCCUPIED.name().toLowerCase(), box3.getId());
+        updateLocker(lockersCol, 14, 1, LockerStatus.OCCUPIED.name().toLowerCase(), box3.getId());
 
         Delivery delivery2 = new Delivery(order4.getId(), "HB-LSO", DeliveryStatus.COMPLETED)
                 .departureDate(LocalDateTime.now().minusDays(3).plusHours(2).toString())
@@ -333,17 +333,18 @@ public class DataInitializer {
         Box box7_3 = new Box(order7.getId(), ids.get("client_usfq"), 3, BoxStatus.PENDING, "10x Filets marins");
         boxesCol.insertMany(Arrays.asList(box7_1.toDocument(), box7_2.toDocument(), box7_3.toDocument()));
 
-        updateLocker(lockersCol, "Puerto Villamil", 3, LockerStatus.OCCUPIED.name().toLowerCase(), box7_1.getId());
-        updateLocker(lockersCol, "Puerto Villamil", 4, LockerStatus.OCCUPIED.name().toLowerCase(), box7_2.getId());
+        updateLocker(lockersCol, 3, 3, LockerStatus.OCCUPIED.name().toLowerCase(), box7_1.getId());
+        updateLocker(lockersCol, 3, 4, LockerStatus.OCCUPIED.name().toLowerCase(), box7_2.getId());
 
-        lockersCol.updateOne(new Document("port_name", "Puerto Ayora").append("number", 1),
+        lockersCol.updateOne(new Document("port_id", 2).append("number", 1),
                 new Document("$set", new Document("status", LockerStatus.MAINTENANCE.name().toLowerCase()).append("maintenance_reason", "Défaillance de la serrure électronique")));
-        lockersCol.updateOne(new Document("port_name", "Puerto Ayora").append("number", 2),
+        lockersCol.updateOne(new Document("port_id", 2).append("number", 2),
                 new Document("$set", new Document("status", LockerStatus.MAINTENANCE.name().toLowerCase()).append("maintenance_reason", "Nettoyage requis")));
 
-        lockersCol.updateOne(new Document("port_name", "Baie Darwin").append("number", 1),
+        lockersCol.updateOne(new Document("port_id", 7).append("number", 1),
                 new Document("$set", new Document("status", LockerStatus.RESERVED.name().toLowerCase()).append("reserved_for_order_id", order3.getId())));
-        lockersCol.updateOne(new Document("port_name", "Canal de Itabaca").append("number", 1),
+
+        lockersCol.updateOne(new Document("port_id", 13).append("number", 1),
                 new Document("$set", new Document("status", LockerStatus.RESERVED.name().toLowerCase()).append("reserved_for_order_id", order5.getId())));
 
     }
@@ -356,8 +357,8 @@ public class DataInitializer {
         col.updateOne(Filters.eq("_id", clientId), Updates.push("order_history", orderId));
     }
 
-    private static void updateLocker(MongoCollection<Document> col, String port, int num, String status, ObjectId boxId) {
-        col.updateOne(new Document("port_name", port).append("number", num),
+    private static void updateLocker(MongoCollection<Document> col, int portId, int num, String status, ObjectId boxId) {
+        col.updateOne(new Document("port_id", portId).append("number", num),
                 new Document("$set", new Document("status", status).append("box_id", boxId)));
     }
 }

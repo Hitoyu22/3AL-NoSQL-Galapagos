@@ -1,0 +1,13 @@
+type Port {
+    id: Int
+    name: String
+    islandName: String
+    lat: Float
+    lon: Float
+    nbLockers: Int
+    lockers: [Locker]
+}
+
+extend type Query {
+    ports(id: Int, name: String, islandName: String): [Port]
+}
