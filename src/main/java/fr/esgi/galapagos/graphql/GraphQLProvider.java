@@ -4,6 +4,7 @@ import fr.esgi.galapagos.helper.SeaplaneHelper;
 import fr.esgi.galapagos.helper.SeaplaneHelper.SeaplaneInput;
 import fr.esgi.galapagos.service.IslandService;
 import fr.esgi.galapagos.service.SeaplaneService;
+import fr.esgi.galapagos.service.BoxService;
 import graphql.GraphQL;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
@@ -19,6 +20,7 @@ public class GraphQLProvider {
 
     private static final IslandService islandService = new IslandService();
     private static final SeaplaneService seaplaneService = new SeaplaneService();
+    private static final BoxService boxService = new BoxService();
 
     public static GraphQL createGraphQL() {
 
@@ -28,7 +30,8 @@ public class GraphQLProvider {
         List<String> schemaFiles = List.of(
                 "graphql/root.graphqls",
                 "graphql/island.graphqls",
-                "graphql/seaplane.graphqls"
+                "graphql/seaplane.graphqls",
+                "graphql/box.graphqls"
         );
 
         for (String schemaFile : schemaFiles) {
@@ -46,6 +49,13 @@ public class GraphQLProvider {
                         .dataFetcher("seaplanes", environment -> {
                             String id = environment.getArgument("id");
                             return seaplaneService.getSeaplanes(id);
+                        })
+                        .dataFetcher("boxes", environment -> {
+                            String id = environment.getArgument("id");
+                            String orderId = environment.getArgument("orderId");
+                            String clientId = environment.getArgument("clientId");
+                            String status = environment.getArgument("status");
+                            return boxService.getBoxes(id, orderId, clientId, status);
                         })
                 )
                 .type("Mutation", builder -> builder
