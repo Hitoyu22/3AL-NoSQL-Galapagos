@@ -20,7 +20,7 @@ extend type Query {
 }
 
 extend type Mutation {
-    createSeaplane(id: String!, model: String!, boxCapacity: Int!, fuelConsumptionKm: Float!, cruiseSpeedKmh: Float!, status: String!): Seaplane
+    createSeaplane(id: String!, model: String!, boxCapacity: Int!, fuelConsumptionKm: Float!, cruiseSpeedKmh: Float!, status: String!, portId: Int): Seaplane
 
     updateSeaplane(id: String!, model: String, boxCapacity: Int, fuelConsumptionKm: Float, cruiseSpeedKmh: Float, status: String): Seaplane
 

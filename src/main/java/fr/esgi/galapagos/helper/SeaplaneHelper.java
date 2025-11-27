@@ -10,7 +10,8 @@ public class SeaplaneHelper {
             Integer boxCapacity,
             Double fuelConsumptionKm,
             Double cruiseSpeedKmh,
-            String status
+            String status,
+            Integer portId
     ) {}
 
     public static SeaplaneInput extractSeaplaneInput(DataFetchingEnvironment env) {
@@ -20,7 +21,8 @@ public class SeaplaneHelper {
                 env.getArgument("boxCapacity"),
                 env.getArgument("fuelConsumptionKm"),
                 env.getArgument("cruiseSpeedKmh"),
-                env.getArgument("status")
+                env.getArgument("status"),
+                env.getArgument("portId")
         );
     }
 }

@@ -108,7 +108,7 @@ public class GraphQLProvider {
                             }
                             return seaplaneService.createSeaplane(
                                     input.id(), input.model(), input.boxCapacity(),
-                                    input.fuelConsumptionKm(), input.cruiseSpeedKmh(), input.status()
+                                    input.fuelConsumptionKm(), input.cruiseSpeedKmh(), input.status(), input.portId()
                             );
                         })
 

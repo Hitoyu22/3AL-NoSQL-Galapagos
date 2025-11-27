@@ -1,0 +1,8 @@
+[
+    { "id": "prod_1", "name": "Sonde volcanique haute température", "description": "Capteur résistant jusqu'à 1200°C", "price": 2500.0, "weightKg": 5.5 },
+    { "id": "prod_2", "name": "Kit de prélèvement ADN faune", "description": "Kit complet pour analyse génétique", "price": 180.0, "weightKg": 0.8 },
+    { "id": "prod_3", "name": "Station météo portable", "description": "Station autonome capteurs multiples", "price": 3200.0, "weightKg": 12.0 },
+    { "id": "prod_4", "name": "Drone d'observation", "description": "Cartographie aérienne longue portée", "price": 8500.0, "weightKg": 8.5 },
+    { "id": "prod_5", "name": "Kit d'analyse de sol", "description": "Analyse pH, NPK sol volcanique", "price": 750.0, "weightKg": 4.0 },
+    { "id": "prod_6", "name": "Filets de capture marine", "description": "Haute résistance pour plancton", "price": 320.0, "weightKg": 2.5 }
+]
