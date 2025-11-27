@@ -5,6 +5,7 @@ import fr.esgi.galapagos.helper.SeaplaneHelper.SeaplaneInput;
 import fr.esgi.galapagos.service.IslandService;
 import fr.esgi.galapagos.service.SeaplaneService;
 import fr.esgi.galapagos.service.BoxService;
+import fr.esgi.galapagos.service.ClientService;
 import graphql.GraphQL;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
@@ -21,17 +22,18 @@ public class GraphQLProvider {
     private static final IslandService islandService = new IslandService();
     private static final SeaplaneService seaplaneService = new SeaplaneService();
     private static final BoxService boxService = new BoxService();
+    private static final ClientService clientService = new ClientService();
 
     public static GraphQL createGraphQL() {
 
         SchemaParser schemaParser = new SchemaParser();
         TypeDefinitionRegistry typeRegistry = new TypeDefinitionRegistry();
-
         List<String> schemaFiles = List.of(
                 "graphql/root.graphqls",
                 "graphql/island.graphqls",
                 "graphql/seaplane.graphqls",
-                "graphql/box.graphqls"
+                "graphql/box.graphqls",
+                "graphql/client.graphqls"
         );
 
         for (String schemaFile : schemaFiles) {
@@ -57,18 +59,18 @@ public class GraphQLProvider {
                             String status = environment.getArgument("status");
                             return boxService.getBoxes(id, orderId, clientId, status);
                         })
+                        .dataFetcher("clients", environment -> {
+                            String id = environment.getArgument("id");
+                            String name = environment.getArgument("name");
+                            return clientService.getClients(id, name);
+                        })
                 )
                 .type("Mutation", builder -> builder
                         .dataFetcher("createSeaplane", environment -> {
                             SeaplaneInput input = SeaplaneHelper.extractSeaplaneInput(environment);
-
-                            if (input.boxCapacity() == null ||
-                                    input.fuelConsumptionKm() == null ||
-                                    input.cruiseSpeedKmh() == null) {
-
+                            if (input.boxCapacity() == null || input.fuelConsumptionKm() == null || input.cruiseSpeedKmh() == null) {
                                 throw new IllegalArgumentException("Les arguments boxCapacity, fuelConsumptionKm et cruiseSpeedKmh sont obligatoires.");
                             }
-
                             return seaplaneService.createSeaplane(
                                     input.id(), input.model(), input.boxCapacity(),
                                     input.fuelConsumptionKm(), input.cruiseSpeedKmh(), input.status()
@@ -90,6 +92,29 @@ public class GraphQLProvider {
                             String dep = environment.getArgument("departurePort");
                             String arr = environment.getArgument("arrivalPort");
                             return seaplaneService.assignFlight(id, dep, arr);
+                        })
+                        .dataFetcher("createClient", environment -> {
+                            return clientService.createClient(
+                                    environment.getArgument("name"),
+                                    environment.getArgument("type"),
+                                    environment.getArgument("specialty"),
+                                    environment.getArgument("study"),
+                                    environment.getArgument("email")
+                            );
+                        })
+                        .dataFetcher("updateClient", environment -> {
+                            return clientService.updateClient(
+                                    environment.getArgument("id"),
+                                    environment.getArgument("name"),
+                                    environment.getArgument("type"),
+                                    environment.getArgument("specialty"),
+                                    environment.getArgument("study"),
+                                    environment.getArgument("email")
+                            );
+                        })
+                        .dataFetcher("deleteClient", environment -> {
+                            String id = environment.getArgument("id");
+                            return clientService.deleteClient(id);
                         })
                 )
                 .build();
