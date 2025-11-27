@@ -1,0 +1,21 @@
+type Locker {
+    id: String
+    portId: Int
+    number: Int
+    status: String
+    boxId: String
+    maintenanceReason: String
+    lastUsed: String
+}
+
+extend type Query {
+    lockers(portId: Int, status: String): [Locker]
+}
+
+extend type Mutation {
+    addLocker(portId: Int!): Locker
+
+    updateLockerStatus(id: String!, status: String!, maintenanceReason: String): Locker
+
+    deleteLocker(id: String!): Boolean
+}

@@ -6,7 +6,7 @@ import org.bson.types.ObjectId;
 
 public class Locker {
     private ObjectId id;
-    private String portName;
+    private int portId;
     private int number;
     private LockerStatus status;
     private ObjectId boxId;
@@ -14,16 +14,16 @@ public class Locker {
     private String maintenanceReason;
     private String lastUsed;
 
-    public Locker(String portName, int number) {
+    public Locker(int portId, int number) {
         this.id = new ObjectId();
-        this.portName = portName;
+        this.portId = portId;
         this.number = number;
         this.status = LockerStatus.EMPTY;
     }
 
     public Document toDocument() {
         Document doc = new Document("_id", id)
-                .append("port_name", portName)
+                .append("port_id", portId)
                 .append("number", number)
                 .append("status", status.name().toLowerCase())
                 .append("box_id", boxId)
@@ -43,12 +43,12 @@ public class Locker {
         this.id = id;
     }
 
-    public String getPortName() {
-        return portName;
+    public int getPortId() {
+        return portId;
     }
 
-    public void setPortName(String portName) {
-        this.portName = portName;
+    public void setPortId(int portId) {
+        this.portId = portId;
     }
 
     public int getNumber() {
@@ -98,5 +98,4 @@ public class Locker {
     public void setLastUsed(String lastUsed) {
         this.lastUsed = lastUsed;
     }
-
 }
