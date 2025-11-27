@@ -1,0 +1,40 @@
+[
+    {
+        "id": "ORD-2023-001",
+        "clientName": "Dr. Elena Rodriguez",
+        "date": "2023-10-20T14:30:00",
+        "status": "DELIVERED",
+        "location": "Casier #1 - Puerto Villamil",
+        "destination": "Puerto Villamil",
+        "items": [
+            { "product": { "id": "prod_1", "name": "Sonde volcanique", "description": "...", "price": 2500, "weightKg": 5.5 }, "quantity": 3 },
+            { "product": { "id": "prod_3", "name": "Station météo", "description": "...", "price": 3200, "weightKg": 12 }, "quantity": 1 }
+        ],
+        "totalWeight": 28.5
+    },
+    {
+        "id": "ORD-2023-042",
+        "clientName": "Prof. Ben Carter",
+        "date": "2023-11-24T09:15:00",
+        "status": "PENDING",
+        "location": "Entrepôt - Puerto Baquerizo",
+        "destination": "Puerto Ayora",
+        "items": [
+            { "product": { "id": "prod_2", "name": "Kit ADN faune", "description": "...", "price": 180, "weightKg": 0.8 }, "quantity": 50 }
+        ],
+        "totalWeight": 40.0
+    },
+    {
+        "id": "ORD-2023-089",
+        "clientName": "Fondation Charles Darwin",
+        "date": "2023-11-25T08:00:00",
+        "status": "IN_TRANSIT",
+        "location": "En vol (HB-LSI)",
+        "destination": "Baie Darwin",
+        "items": [
+            { "product": { "id": "prod_1", "name": "Sonde volcanique", "description": "...", "price": 2500, "weightKg": 5.5 }, "quantity": 2 },
+            { "product": { "id": "prod_2", "name": "Kit ADN faune", "description": "...", "price": 180, "weightKg": 0.8 }, "quantity": 20 }
+        ],
+        "totalWeight": 27.0
+    }
+]
