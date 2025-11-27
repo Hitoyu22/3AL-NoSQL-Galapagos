@@ -7,6 +7,8 @@ import fr.esgi.galapagos.service.IslandService;
 import fr.esgi.galapagos.service.LockerService;
 import fr.esgi.galapagos.service.PortService;
 import fr.esgi.galapagos.service.SeaplaneService;
+import fr.esgi.galapagos.service.BoxService;
+import fr.esgi.galapagos.service.ClientService;
 import graphql.GraphQL;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
@@ -24,18 +26,21 @@ public class GraphQLProvider {
     private static final SeaplaneService seaplaneService = new SeaplaneService();
     private static final PortService portService = new PortService();
     private static final LockerService lockerService = new LockerService();
+    private static final BoxService boxService = new BoxService();
+    private static final ClientService clientService = new ClientService();
 
     public static GraphQL createGraphQL() {
 
         SchemaParser schemaParser = new SchemaParser();
         TypeDefinitionRegistry typeRegistry = new TypeDefinitionRegistry();
-
         List<String> schemaFiles = List.of(
                 "graphql/root.graphqls",
                 "graphql/island.graphqls",
                 "graphql/seaplane.graphqls",
                 "graphql/port.graphqls",
-                "graphql/locker.graphqls"
+                "graphql/locker.graphqls",
+                "graphql/box.graphqls",
+                "graphql/client.graphqls"
         );
 
         for (String schemaFile : schemaFiles) {
@@ -45,19 +50,22 @@ public class GraphQLProvider {
         RuntimeWiring wiring = RuntimeWiring.newRuntimeWiring()
                 .type("Query", builder -> builder
                         .dataFetcher("version", env -> "1.0.0")
-                        .dataFetcher("islands", environment -> {
-                            Integer id = environment.getArgument("id");
-                            String name = environment.getArgument("name");
+
+                        .dataFetcher("islands", env -> {
+                            Integer id = env.getArgument("id");
+                            String name = env.getArgument("name");
                             return islandService.getIslands(id, name);
                         })
-                        .dataFetcher("seaplanes", environment -> {
-                            String id = environment.getArgument("id");
+
+                        .dataFetcher("seaplanes", env -> {
+                            String id = env.getArgument("id");
                             return seaplaneService.getSeaplanes(id);
                         })
-                        .dataFetcher("ports", environment -> {
-                            Integer id = environment.getArgument("id");
-                            String name = environment.getArgument("name");
-                            String islandName = environment.getArgument("islandName");
+
+                        .dataFetcher("ports", env -> {
+                            Integer id = env.getArgument("id");
+                            String name = env.getArgument("name");
+                            String islandName = env.getArgument("islandName");
 
                             List<Port> ports = portService.getPorts(id, name, islandName);
 
@@ -69,79 +77,131 @@ public class GraphQLProvider {
 
                             return ports;
                         })
-                        .dataFetcher("lockers", environment -> {
-                            Integer portId = environment.getArgument("portId");
-                            String status = environment.getArgument("status");
+
+                        .dataFetcher("lockers", env -> {
+                            Integer portId = env.getArgument("portId");
+                            String status = env.getArgument("status");
                             return lockerService.getLockers(portId, status);
                         })
+
+                        .dataFetcher("boxes", env -> {
+                            String id = env.getArgument("id");
+                            String orderId = env.getArgument("orderId");
+                            String clientId = env.getArgument("clientId");
+                            String status = env.getArgument("status");
+                            return boxService.getBoxes(id, orderId, clientId, status);
+                        })
+
+                        .dataFetcher("clients", env -> {
+                            String id = env.getArgument("id");
+                            String name = env.getArgument("name");
+                            return clientService.getClients(id, name);
+                        })
                 )
+
                 .type("Mutation", builder -> builder
+
                         .dataFetcher("createSeaplane", environment -> {
                             SeaplaneInput input = SeaplaneHelper.extractSeaplaneInput(environment);
-
-                            if (input.boxCapacity() == null ||
-                                    input.fuelConsumptionKm() == null ||
-                                    input.cruiseSpeedKmh() == null) {
-
+                            if (input.boxCapacity() == null || input.fuelConsumptionKm() == null || input.cruiseSpeedKmh() == null) {
                                 throw new IllegalArgumentException("Les arguments boxCapacity, fuelConsumptionKm et cruiseSpeedKmh sont obligatoires.");
                             }
-
                             return seaplaneService.createSeaplane(
                                     input.id(), input.model(), input.boxCapacity(),
                                     input.fuelConsumptionKm(), input.cruiseSpeedKmh(), input.status()
                             );
                         })
-                        .dataFetcher("updateSeaplane", environment -> {
-                            SeaplaneInput input = SeaplaneHelper.extractSeaplaneInput(environment);
-                            return seaplaneService.updateSeaplane(
-                                    input.id(), input.model(), input.boxCapacity(),
-                                    input.fuelConsumptionKm(), input.cruiseSpeedKmh(), input.status()
-                            );
-                        })
-                        .dataFetcher("deleteSeaplane", environment -> {
-                            String id = environment.getArgument("id");
+
+                        .dataFetcher("updateSeaplane", environment ->
+                                seaplaneService.updateSeaplane(
+                                        environment.getArgument("id"),
+                                        environment.getArgument("model"),
+                                        environment.getArgument("boxCapacity"),
+                                        environment.getArgument("fuelConsumptionKm"),
+                                        environment.getArgument("cruiseSpeedKmh"),
+                                        environment.getArgument("status")
+                                )
+                        )
+
+                        .dataFetcher("deleteSeaplane", env -> {
+                            String id = env.getArgument("id");
                             return seaplaneService.deleteSeaplane(id);
                         })
-                        .dataFetcher("assignFlight", environment -> {
-                            String id = environment.getArgument("seaplaneId");
-                            String dep = environment.getArgument("departurePort");
-                            String arr = environment.getArgument("arrivalPort");
+
+                        .dataFetcher("assignFlight", env -> {
+                            String id = env.getArgument("seaplaneId");
+                            String dep = env.getArgument("departurePort");
+                            String arr = env.getArgument("arrivalPort");
                             return seaplaneService.assignFlight(id, dep, arr);
                         })
-                        .dataFetcher("addLocker", environment -> {
-                            Integer portId = environment.getArgument("portId");
-                            if (portId == null) {
-                                throw new IllegalArgumentException("Le paramètre portId est obligatoire.");
-                            }
+
+                        .dataFetcher("addLocker", env -> {
+                            Integer portId = env.getArgument("portId");
+                            if (portId == null) throw new IllegalArgumentException("Le paramètre portId est obligatoire.");
                             return lockerService.addLocker(portId);
                         })
-                        .dataFetcher("updateLockerStatus", environment -> {
-                            String id = environment.getArgument("id");
-                            String status = environment.getArgument("status");
-                            String reason = environment.getArgument("maintenanceReason");
-                            return lockerService.updateLockerStatus(id, status, reason);
-                        })
-                        .dataFetcher("deleteLocker", environment -> {
-                            String id = environment.getArgument("id");
-                            return lockerService.deleteLocker(id);
-                        })
+
+                        .dataFetcher("updateLockerStatus", env ->
+                                lockerService.updateLockerStatus(
+                                        env.getArgument("id"),
+                                        env.getArgument("status"),
+                                        env.getArgument("maintenanceReason")
+                                )
+                        )
+
+                        .dataFetcher("deleteLocker", env -> lockerService.deleteLocker(env.getArgument("id")))
+
+                        .dataFetcher("createClient", env ->
+                                clientService.createClient(
+                                        env.getArgument("name"),
+                                        env.getArgument("type"),
+                                        env.getArgument("specialty"),
+                                        env.getArgument("study"),
+                                        env.getArgument("email")
+                                )
+                        )
+
+                        .dataFetcher("updateClient", env ->
+                                clientService.updateClient(
+                                        env.getArgument("id"),
+                                        env.getArgument("name"),
+                                        env.getArgument("type"),
+                                        env.getArgument("specialty"),
+                                        env.getArgument("study"),
+                                        env.getArgument("email")
+                                )
+                        )
+
+                        .dataFetcher("deleteClient", env ->
+                                clientService.deleteClient(env.getArgument("id"))
+                        )
+
+                        .dataFetcher("createBox", env ->
+                                boxService.createBox(
+                                        env.getArgument("orderId"),
+                                        env.getArgument("clientId"),
+                                        env.getArgument("number"),
+                                        env.getArgument("status"),
+                                        env.getArgument("content")
+                                )
+                        )
+
+                        .dataFetcher("updateBox", env ->
+                                boxService.updateBox(
+                                        env.getArgument("id"),
+                                        env.getArgument("orderId"),
+                                        env.getArgument("clientId"),
+                                        env.getArgument("number"),
+                                        env.getArgument("status"),
+                                        env.getArgument("content")
+                                )
+                        )
+
+                        .dataFetcher("deleteBox", env ->
+                                boxService.deleteBox(env.getArgument("id"))
+                        )
                 )
-                .type("Port", builder -> builder
-                        .dataFetcher("lockers", environment -> {
-                            Port port = environment.getSource();
-                            if (port == null || port.getId() == null) {
-                                return List.of();
-                            }
-                            return lockerService.getLockers(port.getId(), null);
-                        })
-                        .dataFetcher("nbLockers", environment -> {
-                            Port port = environment.getSource();
-                            if (port == null || port.getId() == null) {
-                                return 0;
-                            }
-                            return lockerService.countLockersByPortId(port.getId());
-                        })
-                )
+
                 .build();
 
         return GraphQL

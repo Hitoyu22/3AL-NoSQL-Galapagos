@@ -1,0 +1,34 @@
+type Client {
+  id: ID!
+  name: String!
+  type: String!
+  specialty: String
+  study: String
+  email: String
+  orderHistory: [String]
+}
+
+extend type Query {
+  clients(id: ID, name: String): [Client]
+}
+
+extend type Mutation {
+  createClient(
+    name: String!
+    type: String!
+    specialty: String
+    study: String
+    email: String!
+  ): Client
+
+  updateClient(
+    id: ID!
+    name: String
+    type: String
+    specialty: String
+    study: String
+    email: String
+  ): Client
+
+  deleteClient(id: ID!): Boolean
+}
