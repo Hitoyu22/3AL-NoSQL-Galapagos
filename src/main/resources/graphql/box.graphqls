@@ -1,16 +1,3 @@
-# Les Queries pour récupérer les boîtes
-
-extend type Query {
-    # Récupérer les boîtes - au moins un paramètre recommandé
-    boxes(
-        id: ID
-        orderId: ID
-        clientId: ID
-        status: BoxStatus
-    ): [Box]
-}
-
-# La structure d'une boîte
 type Box {
     id: ID!
     orderId: ID!
@@ -24,4 +11,34 @@ enum BoxStatus {
     DELIVERED
     IN_TRANSIT
     PENDING
+}
+
+extend type Query {
+    boxes(
+        id: ID
+        orderId: ID
+        clientId: ID
+        status: BoxStatus
+    ): [Box]
+}
+
+extend type Mutation {
+    createBox(
+        orderId: ID!
+        clientId: ID!
+        number: Int!
+        status: BoxStatus
+        content: String!
+    ): Box
+
+    updateBox(
+        id: ID!
+        orderId: ID
+        clientId: ID
+        number: Int
+        status: BoxStatus
+        content: String
+    ): Box
+
+    deleteBox(id: ID!): Boolean
 }
