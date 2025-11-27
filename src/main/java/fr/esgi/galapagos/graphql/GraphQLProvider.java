@@ -116,6 +116,31 @@ public class GraphQLProvider {
                             String id = environment.getArgument("id");
                             return clientService.deleteClient(id);
                         })
+                        .dataFetcher("createBox", environment -> {
+                            String orderId = environment.getArgument("orderId");
+                            String clientId = environment.getArgument("clientId");
+                            Integer number = environment.getArgument("number");
+                            String status = environment.getArgument("status");
+                            String content = environment.getArgument("content");
+
+                            return boxService.createBox(orderId, clientId, number, status, content);
+                        })
+
+                        .dataFetcher("updateBox", environment -> {
+                            String id = environment.getArgument("id");
+                            String orderId = environment.getArgument("orderId");
+                            String clientId = environment.getArgument("clientId");
+                            Integer number = environment.getArgument("number");
+                            String status = environment.getArgument("status");
+                            String content = environment.getArgument("content");
+
+                            return boxService.updateBox(id, orderId, clientId, number, status, content);
+                        })
+
+                        .dataFetcher("deleteBox", environment -> {
+                            String id = environment.getArgument("id");
+                            return boxService.deleteBox(id);
+                        })
                 )
                 .build();
 
