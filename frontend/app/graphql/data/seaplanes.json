@@ -1,0 +1,14 @@
+[
+    { "id": "HB-LSR", "model": "DHC-6 Twin Otter", "status": "AVAILABLE", "location": "Puerto Baquerizo Moreno", "lat": -0.9025, "lon": -89.609167 },
+    { "id": "HB-LSK", "model": "Grumman G-21 Goose", "status": "MAINTENANCE", "location": "Puerto Baquerizo Moreno", "lat": -0.9025, "lon": -89.609167 },
+    { "id": "HB-LSC", "model": "DHC-6 Twin Otter", "status": "AVAILABLE", "location": "Puerto Baquerizo Moreno", "lat": -0.9025, "lon": -89.609167 },
+    { "id": "HB-LSD", "model": "Cessna 208 Caravan", "status": "IN_FLIGHT", "location": "Vers Puerto Villamil", "lat": -0.9300, "lon": -90.3000, "route": true },
+    { "id": "HB-LSE", "model": "DHC-3 Otter", "status": "AVAILABLE", "location": "Puerto Baquerizo Moreno", "lat": -0.9025, "lon": -89.609167 },
+    { "id": "HB-LSF", "model": "Grumman G-73 Mallard", "status": "AT_PORT", "location": "Puerto Ayora", "lat": -0.7400, "lon": -90.3117 },
+    { "id": "HB-LSG", "model": "DHC-6 Twin Otter", "status": "AVAILABLE", "location": "Puerto Baquerizo Moreno", "lat": -0.9025, "lon": -89.609167 },
+    { "id": "HB-LSH", "model": "Cessna 208 Caravan", "status": "AVAILABLE", "location": "Puerto Baquerizo Moreno", "lat": -0.9025, "lon": -89.609167 },
+    { "id": "HB-LSI", "model": "DHC-3 Otter", "status": "IN_FLIGHT", "location": "Vers Baie Darwin", "lat": -0.3000, "lon": -89.8000, "route": true },
+    { "id": "HB-LSJ", "model": "Grumman G-21 Goose", "status": "AVAILABLE", "location": "Puerto Baquerizo Moreno", "lat": -0.9025, "lon": -89.609167 },
+    { "id": "HB-LSN", "model": "Cessna 208 Caravan", "status": "AVAILABLE", "location": "Puerto Baquerizo Moreno", "lat": -0.9025, "lon": -89.609167 },
+    { "id": "HB-LSO", "model": "Grumman G-73 Mallard", "status": "AT_PORT", "location": "Punta Cormorant", "lat": -1.2333, "lon": -90.4167 }
+]
