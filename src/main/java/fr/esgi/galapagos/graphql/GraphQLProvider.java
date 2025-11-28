@@ -1,14 +1,11 @@
 package fr.esgi.galapagos.graphql;
 
-import fr.esgi.galapagos.helper.SeaplaneHelper;
+import fr.esgi.galapagos.helper.*;
+import fr.esgi.galapagos.helper.BoxHelper.BoxInput;
+import fr.esgi.galapagos.helper.ClientHelper.ClientInput;
 import fr.esgi.galapagos.helper.SeaplaneHelper.SeaplaneInput;
 import fr.esgi.galapagos.model.neo4j.Port;
-import fr.esgi.galapagos.service.IslandService;
-import fr.esgi.galapagos.service.LockerService;
-import fr.esgi.galapagos.service.PortService;
-import fr.esgi.galapagos.service.SeaplaneService;
-import fr.esgi.galapagos.service.BoxService;
-import fr.esgi.galapagos.service.ClientService;
+import fr.esgi.galapagos.service.*;
 import graphql.GraphQL;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
@@ -24,10 +21,12 @@ public class GraphQLProvider {
 
     private static final IslandService islandService = new IslandService();
     private static final SeaplaneService seaplaneService = new SeaplaneService();
-    private static final PortService portService = new PortService();
-    private static final LockerService lockerService = new LockerService();
     private static final BoxService boxService = new BoxService();
     private static final ClientService clientService = new ClientService();
+    private static final ProductService productService = new ProductService();
+    private static final OrderService orderService = new OrderService();
+    private static final PortService portService = new PortService();
+    private static final LockerService lockerService = new LockerService();
 
     public static GraphQL createGraphQL() {
 
@@ -37,10 +36,12 @@ public class GraphQLProvider {
                 "graphql/root.graphqls",
                 "graphql/island.graphqls",
                 "graphql/seaplane.graphqls",
-                "graphql/port.graphqls",
-                "graphql/locker.graphqls",
                 "graphql/box.graphqls",
-                "graphql/client.graphqls"
+                "graphql/client.graphqls",
+                "graphql/product.graphqls",
+                "graphql/order.graphqls",
+                "graphql/port.graphqls",
+                "graphql/locker.graphqls"
         );
 
         for (String schemaFile : schemaFiles) {
@@ -60,6 +61,19 @@ public class GraphQLProvider {
                         .dataFetcher("seaplanes", env -> {
                             String id = env.getArgument("id");
                             return seaplaneService.getSeaplanes(id);
+                        })
+
+                        .dataFetcher("products", env -> productService.getProducts(
+                            env.getArgument("id"), 
+                            env.getArgument("name")))
+                        
+                        .dataFetcher("orders", env -> {
+                            String statusStr = env.getArgument("status");
+                            return orderService.getOrders(
+                                    env.getArgument("id"),
+                                    env.getArgument("clientId"),
+                                    statusStr != null ? fr.esgi.galapagos.model.enums.OrderStatus.valueOf(statusStr) : null
+                            );
                         })
 
                         .dataFetcher("ports", env -> {
@@ -160,6 +174,16 @@ public class GraphQLProvider {
                                         env.getArgument("email")
                                 )
                         )
+                        
+                        .dataFetcher("createProduct", env -> {
+                            var input = ProductHelper.extractProductInput(env);
+                            return productService.createProduct(input.name(), input.description(), input.stockAvailable(), input.weightKg(), input.unitPrice());
+                        })
+                        .dataFetcher("updateProduct", env -> {
+                            var input = ProductHelper.extractProductInput(env);
+                            return productService.updateProduct(input.id(), input.name(), input.description(), input.stockAvailable(), input.weightKg(), input.unitPrice());
+                        })
+                        .dataFetcher("deleteProduct", env -> productService.deleteProduct(env.getArgument("id")))
 
                         .dataFetcher("updateClient", env ->
                                 clientService.updateClient(
@@ -196,10 +220,25 @@ public class GraphQLProvider {
                                         env.getArgument("content")
                                 )
                         )
+                        .dataFetcher("createOrder", env -> {
+                            var input = OrderHelper.extractOrderInput(env);
+                            var products = input.products().stream()
+                                .map(p -> new fr.esgi.galapagos.model.mongodb.Order.OrderedProduct(new org.bson.types.ObjectId(p.productId()), p.quantity()))
+                                .collect(java.util.stream.Collectors.toList());
 
                         .dataFetcher("deleteBox", env ->
                                 boxService.deleteBox(env.getArgument("id"))
                         )
+                            return orderService.createOrder(
+                                    input.clientId(), input.priority(), input.deliveryPort(),
+                                    products, input.boxCount(), input.totalWeightKg()
+                            );
+                        })
+                        .dataFetcher("updateOrderStatus", env -> {
+                            String statusStr = env.getArgument("status");
+                            return orderService.updateStatus(env.getArgument("id"), fr.esgi.galapagos.model.enums.OrderStatus.valueOf(statusStr));
+                        })
+                        .dataFetcher("deleteOrder", env -> orderService.deleteOrder(env.getArgument("id")))
                 )
 
                 .build();
