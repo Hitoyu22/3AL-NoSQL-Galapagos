@@ -1,8 +1,6 @@
 package fr.esgi.galapagos.graphql;
 
 import fr.esgi.galapagos.helper.*;
-import fr.esgi.galapagos.helper.BoxHelper.BoxInput;
-import fr.esgi.galapagos.helper.ClientHelper.ClientInput;
 import fr.esgi.galapagos.helper.SeaplaneHelper.SeaplaneInput;
 import fr.esgi.galapagos.model.neo4j.Port;
 import fr.esgi.galapagos.service.*;
@@ -195,11 +193,9 @@ public class GraphQLProvider {
                                         env.getArgument("email")
                                 )
                         )
-
                         .dataFetcher("deleteClient", env ->
                                 clientService.deleteClient(env.getArgument("id"))
                         )
-
                         .dataFetcher("createBox", env ->
                                 boxService.createBox(
                                         env.getArgument("orderId"),
@@ -209,7 +205,6 @@ public class GraphQLProvider {
                                         env.getArgument("content")
                                 )
                         )
-
                         .dataFetcher("updateBox", env ->
                                 boxService.updateBox(
                                         env.getArgument("id"),
@@ -222,23 +217,36 @@ public class GraphQLProvider {
                         )
                         .dataFetcher("createOrder", env -> {
                             var input = OrderHelper.extractOrderInput(env);
-                            var products = input.products().stream()
-                                .map(p -> new fr.esgi.galapagos.model.mongodb.Order.OrderedProduct(new org.bson.types.ObjectId(p.productId()), p.quantity()))
-                                .collect(java.util.stream.Collectors.toList());
 
+                            var products = input.products().stream()
+                                    .map(p -> new fr.esgi.galapagos.model.mongodb.Order.OrderedProduct(
+                                            new org.bson.types.ObjectId(p.productId()),
+                                            p.quantity()
+                                    ))
+                                    .collect(java.util.stream.Collectors.toList());
+
+                            return orderService.createOrder(
+                                    input.clientId(),
+                                    input.priority(),
+                                    input.deliveryPort(),
+                                    products,
+                                    input.boxCount(),
+                                    input.totalWeightKg()
+                            );
+                        })
                         .dataFetcher("deleteBox", env ->
                                 boxService.deleteBox(env.getArgument("id"))
                         )
-                            return orderService.createOrder(
-                                    input.clientId(), input.priority(), input.deliveryPort(),
-                                    products, input.boxCount(), input.totalWeightKg()
-                            );
-                        })
                         .dataFetcher("updateOrderStatus", env -> {
                             String statusStr = env.getArgument("status");
-                            return orderService.updateStatus(env.getArgument("id"), fr.esgi.galapagos.model.enums.OrderStatus.valueOf(statusStr));
+                            return orderService.updateStatus(
+                                    env.getArgument("id"),
+                                    fr.esgi.galapagos.model.enums.OrderStatus.valueOf(statusStr)
+                            );
                         })
-                        .dataFetcher("deleteOrder", env -> orderService.deleteOrder(env.getArgument("id")))
+                        .dataFetcher("deleteOrder", env ->
+                                orderService.deleteOrder(env.getArgument("id"))
+                        )
                 )
 
                 .build();

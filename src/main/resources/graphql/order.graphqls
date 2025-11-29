@@ -1,49 +1,49 @@
 type Order {
-  id: ID!
-  clientId: ID!
-  orderDate: String!
-  status: OrderStatus!
-  priority: String
-  deliveryPort: String
-  products: [OrderedProduct!]
-  boxCount: Int
-  boxesDelivered: Int
-  totalWeightKg: Float
+    id: ID!
+    clientId: ID!
+    orderDate: String!
+    status: OrderStatus!
+    priority: String
+    deliveryPort: String
+    products: [OrderedProduct!]
+    boxCount: Int
+    boxesDelivered: Int
+    totalWeightKg: Float
 }
 
 type OrderedProduct {
-  productId: ID!
-  quantity: Int!
+    product: Product
+    quantity: Int!
 }
 
 # Input nécessaire pour créer une commande avec une liste de produits
 input OrderedProductInput {
-  productId: ID!
-  quantity: Int!
+    productId: ID!
+    quantity: Int!
 }
 
 enum OrderStatus {
-  PENDING
-  DELIVERED
-  IN_TRANSIT
-  PARTIALLY_DELIVERED
+    PENDING
+    DELIVERED
+    IN_TRANSIT
+    PARTIALLY_DELIVERED
 }
 
 extend type Query {
-  orders(id: ID, clientId: ID, status: OrderStatus): [Order]
+    orders(id: ID, clientId: ID, status: OrderStatus): [Order]
 }
 
 extend type Mutation {
-  createOrder(
-    clientId: ID!
-    priority: String!
-    deliveryPort: String!
-    products: [OrderedProductInput!]!
-    boxCount: Int!
-    totalWeightKg: Float!
-  ): Order
+    createOrder(
+        clientId: ID!
+        priority: String!
+        deliveryPort: String!
+        products: [OrderedProductInput!]!
+        boxCount: Int!
+        totalWeightKg: Float!
+    ): Order
 
-  updateOrderStatus(id: ID!, status: OrderStatus!): Order
+    updateOrderStatus(id: ID!, status: OrderStatus!): Order
 
-  deleteOrder(id: ID!): Boolean
+    deleteOrder(id: ID!): Boolean
 }

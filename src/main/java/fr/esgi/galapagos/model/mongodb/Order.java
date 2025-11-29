@@ -55,9 +55,16 @@ public class Order {
     public static class OrderedProduct {
         private ObjectId productId;
         private int quantity;
+        private Product product;
 
         public OrderedProduct(ObjectId productId, int quantity) {
             this.productId = productId;
+            this.quantity = quantity;
+        }
+
+        public OrderedProduct(Product product, int quantity) {
+            this.product = product;
+            this.productId = product.getId();
             this.quantity = quantity;
         }
 
@@ -81,6 +88,9 @@ public class Order {
             this.quantity = quantity;
         }
 
+        public Product getProduct() {
+            return product;
+        }
     }
 
     public ObjectId getId() {
@@ -162,5 +172,4 @@ public class Order {
     public void setTotalWeightKg(double totalWeightKg) {
         this.totalWeightKg = totalWeightKg;
     }
-
 }
